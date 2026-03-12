@@ -761,4 +761,16 @@ def discord_dinle():
 
 # BU BLOK EN SONDA OLMALI
 if __name__ == "__main__":
+
     discord_dinle()
+    app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot Aktif!"
+
+def run_web_server():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
+
+threading.Thread(target=run_web_server).start()
