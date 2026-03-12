@@ -685,7 +685,10 @@ son_gonderim_zamani = 0  # 2 dakika kuralı için değişken
 def discord_mesaj_gonder(kanal_id, mesaj):
     try:
         url = f"https://discord.com/api/v9/channels/{kanal_id}/messages"
-        headers = {"Authorization": f"Bot {token}"}
+        headers = {
+            "Authorization": f"Bot {token}",
+            "Content-Type": "application/json"
+        }
         requests.post(url, headers=headers, json={"content": mesaj})
     except: pass
 
@@ -716,7 +719,7 @@ def discord_dinle():
                             discord_mesaj_gonder(kanal_id, "🛑 **Saldırı durduruldu.**")
 
                         elif content.startswith("/sms"):
-                            # --- 2 DAKİKA BEKLEME KONTROLÜ ---
+                            # --- 1. KURAL: 2 DAKİKA BEKLEME KONTROLÜ ---
                             su_an = time.time()
                             if su_an - son_gonderim_zamani < 120:
                                 kalan = int(120 - (su_an - son_gonderim_zamani))
@@ -735,12 +738,12 @@ def discord_dinle():
                                             hedef_limit = int(p.split(":")[1])
                                         except: pass
 
-                                # --- 150 LİMİT KONTROLÜ ---
+                                # --- 2. KURAL: 150 LİMİT KONTROLÜ ---
                                 if hedef_limit >= 150:
                                     discord_mesaj_gonder(kanal_id, "❌ **Limit aşıldı tekrar deneyiniz!** (Maksimum 149 SMS gönderebilirsiniz.)")
                                     continue
 
-                                # --- BAŞARI MESAJI VE SALDIRI BAŞLATMA ---
+                                # --- 3. KURAL: BAŞARI MESAJI VE SALDIRI BAŞLATMA ---
                                 dur_bayragi = False
                                 son_gonderim_zamani = su_an
                                 discord_mesaj_gonder(kanal_id, f"✅ **Durum Başarılı!**\n🚀 Miktar: `{hedef_limit}`\n📱 Gönderim Başladı!")
@@ -788,5 +791,5 @@ if __name__ == "__main__":
     # Önce portu arka planda açıyoruz
     threading.Thread(target=run_web_server).start()
     
-    # Sonra senin botun dinleme fonksiyonunu başlatıyoruz
+    # Sonra botun dinleme fonksiyonunu başlatıyoruz
     discord_dinle()
