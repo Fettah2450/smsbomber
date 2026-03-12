@@ -675,7 +675,6 @@ class SendSms():
 # =========================================================
 # 7/24 SUNUCU MODU (SMS.PY SONUNA EKLENECEK KISIM)
 # =========================================================
-# Render'da "Environment Variables" kısmına DISCORD_TOKEN adıyla tokenini ekle
 token = os.getenv("DISCORD_TOKEN") 
 chat_id = "1480908541320757410" 
 
@@ -734,7 +733,6 @@ def discord_dinle():
                                 def saldiri_yap(num, limit, aktif_kanal):
                                     global dur_bayragi
                                     try:
-                                        # Kendi içindeki SendSms sınıfını kullanır
                                         bombaci = SendSms(num, "")
                                         methods = [m for m in dir(bombaci) if not m.startswith("_") and m not in ["adet", "phone", "mail", "tc"]]
                                         
@@ -759,11 +757,8 @@ def discord_dinle():
         except Exception:
             time.sleep(5)
 
-# BU BLOK EN SONDA OLMALI
-if __name__ == "__main__":
-
-    discord_dinle()
-    app = Flask('')
+# --- RENDER PORT AYARI ---
+app = Flask('')
 
 @app.route('/')
 def home():
@@ -773,4 +768,10 @@ def run_web_server():
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
 
-threading.Thread(target=run_web_server).start()
+# --- ANA ÇALIŞTIRICI ---
+if __name__ == "__main__":
+    # Önce portu arka planda açıyoruz (Render için)
+    threading.Thread(target=run_web_server).start()
+    
+    # Sonra asıl bot dinlemesini başlatıyoruz
+    discord_dinle()
