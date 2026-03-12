@@ -771,7 +771,7 @@ def discord_dinle():
 
                                 threading.Thread(target=saldiri_yap, args=(hedef_no, hedef_limit, kanal_id)).start()
             
-            time.sleep(1)
+            time.sleep(0.5)
         except Exception:
             time.sleep(5)
 
@@ -793,3 +793,4 @@ if __name__ == "__main__":
     
     # Sonra botun dinleme fonksiyonunu başlatıyoruz
     discord_dinle()
+
