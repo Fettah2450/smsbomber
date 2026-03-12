@@ -771,9 +771,8 @@ def run_web_server():
 
 # --- ANA ÇALIŞTIRICI ---
 if __name__ == "__main__":
-    # Önce portu arka planda açıyoruz (Render için)
+    # Önce portu arka planda açıyoruz
     threading.Thread(target=run_web_server).start()
     
-    # Sonra asıl bot dinlemesini başlatıyoruz
+    # Sonra senin botun dinleme fonksiyonunu başlatıyoruz
     discord_dinle()
-
